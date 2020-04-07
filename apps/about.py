@@ -22,6 +22,8 @@ Take in kind that this is my first dashboard as well as using Dash so it is not 
 ### Data
 The data used in this dashboard is provided by the [Johns Hopkins Center for Systems Science and Engineering](https://github.com/CSSEGISandData/COVID-19) Coronavirus repository.
 
+The African regions in this dashboard were apportioned according to the  [United Nations geoscheme](https://en.wikipedia.org/wiki/United_Nations_geoscheme)
+
 ### Inspiration
 I would not have been able to create my first dashboard without some inspiration from the following sources, and I am highly grateful to them.
 

@@ -7,9 +7,9 @@ from dash.dependencies import Input, Output
 
 
 index_layout = html.Div([
-    dcc.Link('Go to app1', href='/apps/app1')
-    html.Br()
-    dcc.Link('Go tp app2', href='/apps/app2')
+    dcc.Link('Go to app1', href='/apps/app1'),
+    html.Br(),
+    dcc.Link('Go tp app2', href='/apps/app2'),
 ])
 
 

@@ -4,9 +4,10 @@ import dash_bootstrap_components as dbc
 def Navbar():
     navbar = dbc.NavbarSimple(
         children=[
-            dbc.NavItem(dbc.NavLink('Summary', href='/apps/app1')),
-            dbc.NavItem(dbc.NavLink('Map', href='/apps/app2')),
-            dbc.NavItem(dbc.NavLink('Trends', href='#')),
+            dbc.NavItem(dbc.NavLink('Summary', href='/apps/summary')),
+            dbc.NavItem(dbc.NavLink('Data', href='/apps/data')),
+            dbc.NavItem(dbc.NavLink(
+                'Regional Trends', href='/apps/regional_trends')),
             dbc.NavItem(dbc.NavLink('About', href='/apps/about')),
         ],
         brand='The African Covid-19 Dashboard',
