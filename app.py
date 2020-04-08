@@ -22,7 +22,7 @@ flatly_theme = ['assets/bootstrap.min.css', 'assets/bootstrap-grid.min.css']
 
 app = dash.Dash(__name__, external_stylesheets=flatly_theme)
 
-# server = app.server
+server = app.server
 
 app.config.suppress_callback_exceptions = True
 app.title = 'African COVID-19 Dashboard'
