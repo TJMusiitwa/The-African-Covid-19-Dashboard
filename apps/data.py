@@ -20,7 +20,24 @@ data_layout = html.Div(
                 sort_action='native',
                 filter_action="native",
             ),
+            html.Div(html.Br(),),
+            dbc.Row(
+                [
+                    dbc.Col(html.A(
+                        'Download This Data',
+                        id='download-link',
+                        download="africa_data.csv",
+                        href="",
+                        target="_blank",
+                        className='btn btn-secondary'
+                    )),
+
+                ],
+                justify="end",
+                align="end",
+            ),
         ],
             fluid=True,
         ),
+
     ])

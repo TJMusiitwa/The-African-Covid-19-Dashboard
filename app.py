@@ -14,7 +14,53 @@ init_notebook_mode(connected=True)
 
 flatly_theme = ['assets/bootstrap.min.css', 'assets/bootstrap-grid.min.css']
 
-app = dash.Dash(__name__, external_stylesheets=flatly_theme)
+app = dash.Dash(__name__, external_stylesheets=flatly_theme, meta_tags=[
+    {
+        'name': 'description',
+        'content': 'A dashboard built to visualise the effect of the Coronavirus on the African continent with information on the active, confirmed, recovered and death cases on a by-region basis and Africa as a whole.',
+
+    },
+    {
+        'name': 'author',
+        'content': 'Jonathan Thomas Musiitwa'
+    },
+    {
+        'property': 'og:title',
+        'content': 'African COVID-19 Dashboard'
+    },
+    {
+        'property': 'og:description',
+        'content': 'A dashboard built to visualise the effect of the Coronavirus on the African continent with information on the active, confirmed, recovered and death cases on a by-region basis and Africa as a whole.'
+    },
+    {
+        'property': 'og:url',
+        'content': 'http://african-covid19-dashboard.herokuapp.com/'
+    },
+    {
+        'property': 'og:image',
+        'content': 'https://raw.githubusercontent.com/TJMusiitwa/The-African-Covid-19-Dashboard/master/assets/favicon.ico'
+    },
+    {
+        'name': 'twitter:title',
+        'content': 'African COVID-19 Dashboard'
+    },
+    {
+        'name': 'twitter:card',
+        'content': 'summary'
+    },
+    {
+        'name': 'twitter:creator',
+        'content': '@TJMusiitwa'
+    },
+    {
+        'name': 'twitter:description',
+        'content': 'A dashboard built to visualise the effect of the Coronavirus on the African continent with information on the active, confirmed, recovered and death cases on a by-region basis and Africa as a whole.'
+    },
+    {
+        'name': 'viewport',
+        'content': 'width=device-width, initial-scale=1.0'
+    }
+])
 
 server = app.server
 

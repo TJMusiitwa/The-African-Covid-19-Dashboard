@@ -3,12 +3,105 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
+import pandas as pd
+from plotly.subplots import make_subplots
 
 #from app import app
 from navbar import Navbar
 
 nav = Navbar()
 
+df_africa = pd.read_csv('africa_data.csv')
+df_africa['date'] = pd.to_datetime(df_africa['date'])
+
+value = df_africa[df_africa['date'] ==
+                  df_africa['date'].iloc[-1]]['Confirmed'].sum()
+delta = df_africa[df_africa['date'] ==
+                  df_africa['date'].unique()[-2]]['Confirmed'].sum()
+
+active_value = df_africa[df_africa['date'] ==
+                         df_africa['date'].iloc[-1]]['Active'].sum()
+active_delta = df_africa[df_africa['date'] ==
+                         df_africa['date'].unique()[-2]]['Active'].sum()
+
+
+recovered_value = df_africa[df_africa['date'] ==
+                            df_africa['date'].iloc[-1]]['Recovered'].sum()
+recovered_delta = df_africa[df_africa['date'] ==
+                            df_africa['date'].unique()[-2]]['Recovered'].sum()
+
+
+deaths_value = df_africa[df_africa['date'] ==
+                         df_africa['date'].iloc[-1]]['Deaths'].sum()
+deaths_delta = df_africa[df_africa['date'] ==
+                         df_africa['date'].unique()[-2]]['Deaths'].sum()
+
+map_data = df_africa[df_africa['date'] == df_africa['date'].iloc[-1]].groupby('Country/Region').agg(
+    {'Active': 'sum', 'Longitude': 'mean', 'Latitude': 'mean', 'Country/Region': 'first'})
+
+# Initialize figure with subplots
+fig = make_subplots(
+    rows=2, cols=2,
+    subplot_titles=['Number of active cases by African countries', '', ''],
+    column_widths=[0.6, 0.4],
+    row_heights=[0.4, 0.6],
+    specs=[[{"type": "scattergeo", "rowspan": 2}, {"type": "bar"}],
+           [None, {"type": "scatter"}]])
+
+# Add scattergeo globe map of active corona locations
+fig.add_trace(
+    go.Scattergeo(
+        lon=map_data['Longitude'],
+        lat=map_data['Latitude'],
+        text=map_data['Country/Region'] + ': ' +
+        map_data['Active'].astype(str),
+        mode='markers',
+        showlegend=False,
+        marker_size=(100 * map_data['Active'] / map_data['Active'].max()),
+        marker=dict(reversescale=False,
+                    autocolorscale=False,
+                    symbol='circle',
+                    line=dict(width=1, color='rgba(102, 102, 102)'),
+                    colorscale='Reds',
+                    cmin=0,
+                    color=map_data['Active'],
+                    cmax=map_data['Active'].max(),
+                    colorbar_title="Active Cases")),
+    row=1, col=1
+)
+
+# Add locations bar chart
+fig.add_trace(
+    go.Bar(x=df_africa['date'], y=df_africa['Confirmed'],
+           marker=dict(color="crimson"), showlegend=False),
+    row=1, col=2
+)
+
+# Add 3d surface of volcano
+fig.add_trace(
+    go.Scatter(),
+    row=2, col=2
+)
+
+# Update geo subplot properties
+fig.update_geos(
+    scope='africa',
+    showcountries=True,
+    showsubunits=True,
+    showland=True,
+    projection_type="natural earth",
+    landcolor="rgb(100, 125, 100)",
+    oceancolor="MidnightBlue",
+    showocean=True,
+    lakecolor="LightBlue",
+)
+
+# Set theme, margin, and annotation in layout
+fig.update_layout(
+    margin=dict(r=10, t=25, b=40, l=60),
+)
+
+# fig.show()
 
 summary_layout = html.Div([
     # Disclaimer Alert
@@ -39,70 +132,117 @@ summary_layout = html.Div([
                     dbc.Col(
                         dbc.Card(
                             dbc.CardBody(
-                                dcc.Graph(id='confirmed_total'),
+                                dcc.Graph(figure={
+                                    'data': [{'type': 'indicator',
+                                              'mode': 'number+delta',
+                                              'value': value,
+                                              'delta': {'reference': delta,
+                                                        'valueformat': '.2%',
+                                                        'relative': True,
+                                                        'font': {'size': 25}},
+                                              'number': {'valueformat': ',',
+                                                         'font': {'size': 50, 'color': 'white'}},
+                                              'domain': {'y': [0, 1], 'x': [0, 1]}}],
+                                    'layout': {
+                                        'title': 'Total Confirmed Cases',
+                                        'height': 150,
+                                        'paper_bgcolor': 'rgba(0,0,0,0)',
+                                        'plot_bgcolor': 'rgba(0,0,0,0)',
+                                        'autosize': True,
+                                        'font': {'color': 'white'}
+
+                                    }
+                                }),
                                 className='card text-white bg-primary'
                             ))),
                     dbc.Col(dbc.Card(
-                        dbc.CardBody(
-                            [html.H3("1400", className="card-title"),
-                             html.P("Active Cases",
-                                    className="card-text"),
-                             ],
-                            className='card text-white bg-info'
-                        ))),
+                        dcc.Graph(
+                            figure={
+                                'data': [{'type': 'indicator',
+                                          'mode': 'number+delta',
+                                          'value': active_value,
+                                          'delta': {'reference': active_delta,
+                                                    'valueformat': '.2%',
+                                                    'relative': True,
+                                                    'font': {'size': 25, 'color': 'red'}},
+                                          'number': {'valueformat': ',',
+                                                     'font': {'size': 50, 'color': 'white'}},
+                                          'domain': {'y': [0, 1], 'x': [0, 1]}}],
+                                'layout': {
+                                    'title': 'Total Active Cases',
+                                    'height': 150,
+                                    'paper_bgcolor': 'rgba(0,0,0,0)',
+                                    'plot_bgcolor': 'rgba(0,0,0,0)',
+                                    'font': {'color': 'white'}
+                                }
+                            },
+                        ),
+                        className='card text-white bg-info',
+                        body=True
+                    )),
                     dbc.Col(dbc.Card(
-                        dbc.CardBody(
-                            [html.H3("1400", className="card-title"),
-                             html.P("Recovered Cases",
-                                    className="card-text"),
-                             ],
-                            className='card text-white bg-success'
-                        ))),
-                    dbc.Col(dbc.Card(
-                        dbc.CardBody(
-                            [html.H3("100", className="card-title"),
-                             html.P("Deaths",
-                                    className="card-text"),
-                             ],
-                            className='card text-white bg-danger'
-                        ))),
-                ]
-            ),
-            fluid=True,
-        ),
-        dbc.Row(
-            [
-                # dbc.Col(html.Div(""), width=3),
-                dbc.Col(
-                    children=dbc.FormGroup(
-                        [
+                        dcc.Graph(
+                            figure={
+                                'data': [{'type': 'indicator',
+                                          'mode': 'number+delta',
+                                          'value': recovered_value,
+                                          'delta': {'reference': recovered_delta,
+                                                    'valueformat': '.2%',
+                                                    'relative': True,
+                                                    'font': {'size': 25}},
+                                          'number': {'valueformat': ',',
+                                                     'font': {'size': 50, 'color': 'white'}},
+                                          'domain': {'y': [0, 1], 'x': [0, 1]}}],
+                                'layout': {
+                                    'title': 'Total Recovered Cases',
+                                    'height': 150,
+                                    'paper_bgcolor': 'rgba(0,0,0,0)',
+                                    'plot_bgcolor': 'rgba(0,0,0,0)',
+                                    'font': {'color': 'white'}
+                                }
 
-                            dbc.Label("Region"),
-                            dbc.RadioItems(
-                                options=[
-                                    {'label': 'North Africa', 'value': 'NA'},
-                                    {'label': 'East Africa', 'value': 'EA'},
-                                    {'label': 'West Africa', 'value': 'WA'},
-                                    {'label': 'Central Africa', 'value': 'CA'},
-                                    {'label': 'South Africa', 'value': 'SA'},
-                                ],
-                                value='EA',
-                                id="radioitems-inline-input",
-                                inline=True,
-                                # className='custom-control custom-radio',
-                                # inputClassName='custom-control-input',
-                                # labelClassName='custom-control-label',
-                            ),
-                        ],
-                        className='form-group'
+                            },
+
+                        ),
+                        body=True,
+                        className='card text-white bg-success'
+                    )),
+                    dbc.Col(dbc.Card(
+                        dcc.Graph(
+                            figure={
+                                'data': [{'type': 'indicator',
+                                          'mode': 'number+delta',
+                                          'value': deaths_value,
+                                          'delta': {'reference': deaths_delta,
+                                                    'valueformat': '.2%',
+                                                    'relative': True,
+                                                    'font': {'size': 25}},
+                                          'number': {'valueformat': ',',
+                                                     'font': {'size': 50, 'color': 'white'}},
+                                          'domain': {'y': [0, 1], 'x': [0, 1]}}],
+                                'layout': {
+                                    'title': 'Total Deaths',
+                                    'height': 150,
+                                    'paper_bgcolor': 'rgba(0,0,0,0)',
+                                    'plot_bgcolor': 'rgba(0,0,0,0)',
+                                    'font': {'color': 'white'}
+                                }
+                            },
+
+                        ),
+                        className='card text-white bg-danger',
+                        body=True
                     ),
-                    align='center',
-                    style={'align': 'center'},
-                    width={"size": 8, "offset": 3}
-                ),
-                # dbc.Col(html.Div(""), width=3),
-            ]
+                    ),
+                ],
+
+            ),
+
         ),
+    ]),
+    html.Br(),
+    html.Div([
+        dbc.Container(dcc.Graph(figure=fig, responsive=True,))
     ])
 ])
 # @app.callback(
