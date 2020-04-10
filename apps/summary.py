@@ -139,7 +139,7 @@ summary_layout = html.Div([
                                               'delta': {'reference': delta,
                                                         'valueformat': '.2%',
                                                         'relative': True,
-                                                        'font': {'size': 25}},
+                                                        'font': {'size': 25, 'color': 'yellow'}},
                                               'number': {'valueformat': ',',
                                                          'font': {'size': 50, 'color': 'white'}},
                                               'domain': {'y': [0, 1], 'x': [0, 1]}}],
@@ -164,7 +164,7 @@ summary_layout = html.Div([
                                           'delta': {'reference': active_delta,
                                                     'valueformat': '.2%',
                                                     'relative': True,
-                                                    'font': {'size': 25, 'color': 'red'}},
+                                                    'font': {'size': 25, 'color': 'yellow'}},
                                           'number': {'valueformat': ',',
                                                      'font': {'size': 50, 'color': 'white'}},
                                           'domain': {'y': [0, 1], 'x': [0, 1]}}],
@@ -243,7 +243,10 @@ summary_layout = html.Div([
     html.Br(),
     html.Div([
         dbc.Container(dcc.Graph(figure=fig, responsive=True,))
-    ])
+    ]),
+    dbc.Container(
+
+    )
 ])
 # @app.callback(
 #     Output('app-1-display-value', 'children'),
