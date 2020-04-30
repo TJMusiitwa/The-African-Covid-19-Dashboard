@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+import pandas as pd
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
-import pandas as pd
 from plotly.subplots import make_subplots
 
 #from app import app
@@ -13,6 +13,8 @@ nav = Navbar()
 
 df_africa = pd.read_csv('africa_data.csv')
 df_africa['date'] = pd.to_datetime(df_africa['date'])
+
+update = df_africa['date'].dt.strftime('%B %d, %Y').iloc[-1]
 
 value = df_africa[df_africa['date'] ==
                   df_africa['date'].iloc[-1]]['Confirmed'].sum()
@@ -39,16 +41,21 @@ deaths_delta = df_africa[df_africa['date'] ==
 map_data = df_africa[df_africa['date'] == df_africa['date'].iloc[-1]].groupby('Country/Region').agg(
     {'Active': 'sum', 'Longitude': 'mean', 'Latitude': 'mean', 'Country/Region': 'first'})
 
+recovered_map_data = df_africa[df_africa['date'] == df_africa['date'].iloc[-1]].groupby('Country/Region').agg(
+    {'Recovered': 'sum', 'Longitude': 'mean', 'Latitude': 'mean', 'Country/Region': 'first'})
+
+death_map_data = df_africa[df_africa['date'] == df_africa['date'].iloc[-1]].groupby('Country/Region').agg(
+    {'Deaths': 'sum', 'Longitude': 'mean', 'Latitude': 'mean', 'Country/Region': 'first'})
+
 # Initialize figure with subplots
 fig = make_subplots(
-    rows=2, cols=2,
-    subplot_titles=['Number of active cases by African countries', '', ''],
-    column_widths=[0.6, 0.4],
-    row_heights=[0.4, 0.6],
-    specs=[[{"type": "scattergeo", "rowspan": 2}, {"type": "bar"}],
-           [None, {"type": "scatter"}]])
+    rows=1, cols=3,
+    subplot_titles=['Active cases in Africa',
+                    'Recovered cases in Africa', 'Death cases in Africa'],
+    column_widths=[0.4, 0.4, 0.4],
+    specs=[[{"type": "scattergeo"}, {"type": "scattergeo"}, {"type": "scattergeo"}]])
 
-# Add scattergeo globe map of active corona locations
+
 fig.add_trace(
     go.Scattergeo(
         lon=map_data['Longitude'],
@@ -60,9 +67,10 @@ fig.add_trace(
         marker_size=(100 * map_data['Active'] / map_data['Active'].max()),
         marker=dict(reversescale=False,
                     autocolorscale=False,
+                    showscale=False,
                     symbol='circle',
                     line=dict(width=1, color='rgba(102, 102, 102)'),
-                    colorscale='Reds',
+                    colorscale='Blues',
                     cmin=0,
                     color=map_data['Active'],
                     cmax=map_data['Active'].max(),
@@ -70,22 +78,58 @@ fig.add_trace(
     row=1, col=1
 )
 
-# Add locations bar chart
+
 fig.add_trace(
-    go.Bar(x=df_africa['date'], y=df_africa['Confirmed'],
-           marker=dict(color="crimson"), showlegend=False),
+    go.Scattergeo(
+        lon=recovered_map_data['Longitude'],
+        lat=recovered_map_data['Latitude'],
+        text=recovered_map_data['Country/Region'] + ': ' +
+        recovered_map_data['Recovered'].astype(str),
+        mode='markers',
+        showlegend=False,
+        marker_size=(
+            100 * recovered_map_data['Recovered'] / recovered_map_data['Recovered'].max()),
+        marker=dict(reversescale=False,
+                    autocolorscale=False,
+                    showscale=False,
+                    symbol='circle',
+                    line=dict(width=1, color='rgba(102, 102, 102)'),
+                    colorscale='Greens',
+                    cmin=0,
+                    color=recovered_map_data['Recovered'],
+                    cmax=recovered_map_data['Recovered'].max(),
+                    colorbar_title="Recovered Cases")),
     row=1, col=2
 )
 
-# Add 3d surface of volcano
+
 fig.add_trace(
-    go.Scatter(),
-    row=2, col=2
+    go.Scattergeo(
+        lon=death_map_data['Longitude'],
+        lat=death_map_data['Latitude'],
+        text=death_map_data['Country/Region'] + ': ' +
+        death_map_data['Deaths'].astype(str),
+        mode='markers',
+        showlegend=False,
+        marker_size=(
+            100 * death_map_data['Deaths'] / death_map_data['Deaths'].max()),
+        marker=dict(reversescale=False,
+                    autocolorscale=False,
+                    showscale=False,
+                    symbol='cross',
+                    line=dict(width=1, color='rgba(102, 102, 102)'),
+                    colorscale='Reds',
+                    cmin=0,
+                    color=death_map_data['Deaths'],
+                    cmax=death_map_data['Deaths'].max(),
+                    colorbar_title="Death Cases")),
+    row=1, col=3
 )
 
 # Update geo subplot properties
 fig.update_geos(
     scope='africa',
+    resolution=50,
     showcountries=True,
     showsubunits=True,
     showland=True,
@@ -98,10 +142,37 @@ fig.update_geos(
 
 # Set theme, margin, and annotation in layout
 fig.update_layout(
-    margin=dict(r=10, t=25, b=40, l=60),
+    margin=dict(r=10, t=25, b=25, l=10),
 )
 
-# fig.show()
+traces = [go.Scatter(
+    x=df_africa.groupby('date')['date'].first(),
+    y=df_africa.groupby('date')['Confirmed'].sum(),
+    hovertemplate='%{y:,g}',
+    name="Confirmed",
+    stackgroup='one',
+    mode='lines'),
+    go.Scatter(
+    x=df_africa.groupby('date')['date'].first(),
+    y=df_africa.groupby('date')['Active'].sum(),
+    hovertemplate='%{y:,g}',
+    name="Active",
+    stackgroup='one',
+    mode='lines'),
+    go.Scatter(
+    x=df_africa.groupby('date')['date'].first(),
+    y=df_africa.groupby('date')['Recovered'].sum(),
+    hovertemplate='%{y:,g}',
+    name="Recovered",
+    stackgroup='one',
+    mode='lines'),
+    go.Scatter(
+    x=df_africa.groupby('date')['date'].first(),
+    y=df_africa.groupby('date')['Deaths'].sum(),
+    hovertemplate='%{y:,g}',
+    name="Deaths",
+    stackgroup='one',
+    mode='lines')]
 
 summary_layout = html.Div([
     # Disclaimer Alert
@@ -121,9 +192,9 @@ summary_layout = html.Div([
     ),
     nav,
     html.Br(),
-    # html.Div(children='Data last updated {} at 5pm Pacific time'.format(update), style={
-    #     'textAlign': 'center',
-    # }),
+    html.Div(children='Data last updated {}'.format(update), style={
+        'textAlign': 'center',
+    }),
     html.Div([
         # The statistic Cards
         dbc.Container(
@@ -242,11 +313,23 @@ summary_layout = html.Div([
     ]),
     html.Br(),
     html.Div([
-        dbc.Container(dcc.Graph(figure=fig, responsive=True,))
+        dbc.Container(dcc.Graph(figure=fig, responsive='auto',))
     ]),
     dbc.Container(
+        dcc.Graph(
+            figure={
+                'data': traces,
+                'layout': {
+                    'title': 'Cases timeline in Africa',
+                    'xaxis_title': 'Date',
+                    'yaxis_title': 'Number of Cases',
+                }
+            })
+    ),
+    html.Div([
+        html.P(children='As per {}, Africa has not reached the point where the number of active cases surpasses the revovered cases; this means that we still have a long way to go before seeing a defeat of the virus.'.format(update), className='lead')
+    ], className='blockquote text-center')
 
-    )
 ])
 # @app.callback(
 #     Output('app-1-display-value', 'children'),

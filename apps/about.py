@@ -15,9 +15,9 @@ about_layout = html.Div([
 Hello and welcome, you might be wondering "oh great" another dashboard and yes you are right it is however, the prime focus of this dashboard is as stated in the title to mainly visualize an overview of the 2019 Novel Coronavirus COVID-19 (2019-nCoV) epidemic as it relates to the African continent.
 
 This dashboard was built with Python using [Dash](https://dash.plotly.com/), with charts made in [Plotly](https://plotly.com/) and the Flatly theme of the app provided by [Bootswatch](https://bootswatch.com/flatly/).
- The code behind the dashboard  is available [here](https://github.com/TJMusiitwa/The-African-Covid-19-Dashboard).
+ The code behind the dashboard  is available [here](https://github.com/TJMusiitwa/The-African-Covid-19-Dashboard).  I welcome any suggestions and pull requests to help add more features or improve upon the dashboard.
  
-Take in kind that this is my first dashboard as well as using Dash so it is not an expert level dashboard but hey we all gotta start somewhere. 😁
+Take in kind that this is my first dashboard as well as using Dash so it is not an expert level dashboard but hey we all gotta start somewhere. 😁 Furthermore, take not that I am no health professional or epidemiologist, and the info displayed in this dashboard should not be interpreted as professional advice.
 
 ### Data
 The data used in this dashboard is provided by the [Johns Hopkins Center for Systems Science and Engineering](https://github.com/CSSEGISandData/COVID-19) Coronavirus repository.

@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 from plotly.offline import init_notebook_mode, iplot
 
-from apps import about, summary, data, regional_trends
+from apps import about, data, regional_trends, summary
 
 init_notebook_mode(connected=True)
 
