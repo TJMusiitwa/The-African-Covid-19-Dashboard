@@ -67,10 +67,10 @@ server = app.server
 app.config.suppress_callback_exceptions = True
 app.title = 'African COVID-19 Dashboard'
 app._favicon = 'assets/favicon.ico'
-# app.scripts.config.serve_locally=False
-# app.scripts.append_script({
-# 'external_url': 'https://www.googletagmanager.com/gtag/js?id=UA-149884264-1'
-# })
+app.scripts.config.serve_locally=False
+app.scripts.append_script({
+'external_url': 'https://www.googletagmanager.com/gtag/js?id=UA-149884264-1'
+})
 
 df_africa = pd.read_csv('africa_data.csv')
 df_africa['date'] = pd.to_datetime(df_africa['date'])
