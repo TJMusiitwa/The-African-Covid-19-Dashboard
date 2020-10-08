@@ -25,7 +25,7 @@ for file in dates:
 
 df = pd.concat(files, axis=0, ignore_index=True, sort=False)
 
-global_data = df.to_csv('global_data.csv', index=False)
+# global_data = df.to_csv('global_data.csv', index=False)
 
 df.drop(['FIPS', 'Admin2', 'Combined_Key', '404: Not Found'],
         axis=1,
