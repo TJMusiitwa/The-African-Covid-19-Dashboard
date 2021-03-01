@@ -326,9 +326,9 @@ summary_layout = html.Div([
                 }
             })
     ),
-    html.Div([
-        html.P(children='As per {}, Africa has not reached the point where the number of active cases surpasses the revovered cases; this means that we still have a long way to go before seeing a defeat of the virus.'.format(update), className='lead')
-    ], className='blockquote text-center')
+    #html.Div([
+    #    html.P(children='As per {}, Africa has not reached the point where the number of active cases surpasses the revovered cases; this means that we still have a long way to go before seeing a defeat of the virus.'.format(update), className='lead')
+    #], className='blockquote text-center')
 
 ])
 # @app.callback(
