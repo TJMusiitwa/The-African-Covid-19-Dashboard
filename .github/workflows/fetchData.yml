@@ -4,6 +4,7 @@ on:
   push: 
   schedule:
     - cron: "30 0 * * SUN-SAT"
+  workflow_dispatch:  
 
 jobs:
   build:
